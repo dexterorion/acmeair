@@ -69,14 +69,14 @@ public class MongoConnectionManager implements MorphiaConstants{
 			try {
 				logger.info("Reading mongo.properties file");
 				prop.load(mongoPropertyFile.openStream());
-				fsync = new Boolean(prop.getProperty("mongo.fsync"));
-				w = new Integer(prop.getProperty("mongo.w"));
-				connectionsPerHost = new Integer(prop.getProperty("mongo.connectionsPerHost"));
-				threadsAllowedToBlockForConnectionMultiplier = new Integer(prop.getProperty("mongo.threadsAllowedToBlockForConnectionMultiplier"));
-				connectTimeout= new Integer(prop.getProperty("mongo.connectTimeout"));
-				socketTimeout= new Integer(prop.getProperty("mongo.socketTimeout"));
-				socketKeepAlive = new Boolean(prop.getProperty("mongo.socketKeepAlive"));
-				maxWaitTime =new Integer(prop.getProperty("mongo.maxWaitTime"));
+				fsync = Boolean.valueOf(prop.getProperty("mongo.fsync"));
+				w = Integer.valueOf(prop.getProperty("mongo.w"));
+				connectionsPerHost = Integer.valueOf(prop.getProperty("mongo.connectionsPerHost"));
+				threadsAllowedToBlockForConnectionMultiplier = Integer.valueOf(prop.getProperty("mongo.threadsAllowedToBlockForConnectionMultiplier"));
+				connectTimeout= Integer.valueOf(prop.getProperty("mongo.connectTimeout"));
+				socketTimeout= Integer.valueOf(prop.getProperty("mongo.socketTimeout"));
+				socketKeepAlive = Boolean.valueOf(prop.getProperty("mongo.socketKeepAlive"));
+				maxWaitTime =Integer.valueOf(prop.getProperty("mongo.maxWaitTime"));
 			}catch (IOException ioe){
 				logger.severe("Exception when trying to read from the mongo.properties file" + ioe.getMessage());
 			}

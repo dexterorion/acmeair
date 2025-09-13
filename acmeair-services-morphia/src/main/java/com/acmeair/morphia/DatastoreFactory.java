@@ -56,10 +56,10 @@ public class DatastoreFactory {
 			try{
 				Properties prop = new Properties();
 				prop.load(DatastoreFactory.class.getResource("/acmeair-mongo.properties").openStream());
-				boolean fsync = new Boolean(prop.getProperty("mongo.fsync"));
-				int w = new Integer(prop.getProperty("mongo.w"));
-				int connectionsPerHost = new Integer(prop.getProperty("mongo.connectionsPerHost"));
-				int threadsAllowedToBlockForConnectionMultiplier = new Integer(prop.getProperty("mongo.threadsAllowedToBlockForConnectionMultiplier"));
+				boolean fsync = Boolean.valueOf(prop.getProperty("mongo.fsync"));
+				int w = Integer.valueOf(prop.getProperty("mongo.w"));
+				int connectionsPerHost = Integer.valueOf(prop.getProperty("mongo.connectionsPerHost"));
+				int threadsAllowedToBlockForConnectionMultiplier = Integer.valueOf(prop.getProperty("mongo.threadsAllowedToBlockForConnectionMultiplier"));
 				
 				// To match the local options
 				MongoClientOptions.Builder builder = new MongoClientOptions.Builder()
