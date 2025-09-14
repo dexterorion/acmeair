@@ -1,3 +1,7 @@
+plugins {
+    id 'org.gretty' version '4.0.3' apply false
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'eclipse'
@@ -12,6 +16,10 @@ subprojects {
 
         implementation 'javax:javaee-web-api:7.0'
         implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+        
+        // Add SLF4J logging implementation to all subprojects
+        implementation 'org.slf4j:slf4j-api:1.7.36'
+        runtimeOnly 'ch.qos.logback:logback-classic:1.2.12'
     }
 }
 
@@ -22,7 +30,6 @@ project(':acmeair-services') {
     dependencies {
         implementation project(':acmeair-common')
         implementation 'com.googlecode.json-simple:json-simple:1.1.1'
-
     }
 }
 
@@ -35,7 +42,6 @@ project(':acmeair-services-morphia') {
     }
 }
 
-
 project(':acmeair-loader') {
     dependencies {
         implementation project(':acmeair-common')
@@ -43,13 +49,9 @@ project(':acmeair-loader') {
     }
 }
 
-
 project(':acmeair-webapp') {
     apply plugin: 'war'
-
-    configurations {
-        jettyRunner
-    }
+    apply plugin: 'org.gretty'
 
     dependencies {
         implementation project(':acmeair-common')
@@ -57,26 +59,18 @@ project(':acmeair-webapp') {
         implementation project(':acmeair-loader')
         implementation project(':acmeair-services-morphia')
         providedRuntime 'javax:javaee-web-api:7.0'
-
-        // Jetty Runner (separate configuration)
-        jettyRunner("org.eclipse.jetty:jetty-runner:9.4.53.v20231009") {
-            transitive = false
-        }
     }
 
-    tasks.register("runWar", JavaExec) {
-        group = "application"
-        description = "Runs the WAR with Jetty Runner"
-
-        doFirst {
-            def jettyRunner = configurations.jettyRunner.singleFile
-            mainClass = "-jar"
-            classpath = files() // -jar ignores classpath
-            args = [
-                jettyRunner.absolutePath,
-                "--port", "8080",
-                "${buildDir}/libs/${archivesBaseName}-${version}.war"
-            ]
-        }
+    // Gretty configuration for Jetty 11
+    gretty {
+        servletContainer = 'jetty11'
+        contextPath = '/'
+        httpPort = 8080
+        
+        // Ensure webapp starts properly
+        managedClassReload = true
+        scanInterval = 0
     }
+
+    // Remove the old runWar task since gretty provides appRun and appRunWar
 }
