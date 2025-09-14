@@ -13,18 +13,31 @@
     <filter-name>CookieFilter</filter-name>
     <url-pattern>/rest/api/*</url-pattern>
   </filter-mapping>
+  
   <servlet>
-    <servlet-name>com.acmeair.web.AppConfig</servlet-name>     
+    <servlet-name>JerseyServlet</servlet-name>
+    <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+      <init-param>
+        <!-- Points to your JAX-RS Application class -->
+        <param-name>javax.ws.rs.Application</param-name>
+        <param-value>com.acmeair.web.AppConfig</param-value>
+      </init-param>
+    <load-on-startup>1</load-on-startup>
   </servlet>
-  <servlet>
-    <servlet-name>com.acmeair.web.AcmeAirApp</servlet-name>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>com.acmeair.web.AcmeAirApp</servlet-name>
-    <url-pattern>/rest/api/*</url-pattern>
-  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>com.acmeair.web.AppConfig</servlet-name>
     <url-pattern>/rest/info/*</url-pattern>
   </servlet-mapping>
+
+  <!-- Another servlet if needed (AcmeAirApp) -->
+  <servlet>
+      <servlet-name>AcmeAirApp</servlet-name>
+      <servlet-class>com.acmeair.web.AcmeAirApp</servlet-class>
+      <load-on-startup>2</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+      <servlet-name>AcmeAirApp</servlet-name>
+      <url-pattern>/rest/info/*</url-pattern>
+  </servlet-mapping>
+  
 </web-app>
