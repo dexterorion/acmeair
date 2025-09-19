@@ -44,7 +44,8 @@ subprojects {
         implementation 'org.slf4j:slf4j-api:2.0.9'
         runtimeOnly 'ch.qos.logback:logback-classic:1.4.11'
 
-        implementation "org.jboss.weld.servlet:weld-servlet-shaded:5.1.2.Final"
+        implementation "org.jboss.weld.servlet:weld-servlet-core:5.1.2.Final"
+        implementation "org.jboss.weld:weld-core-impl:5.1.2.Final"
     }
 }
 
@@ -99,6 +100,8 @@ project(':acmeair-webapp') {
         springBoot = false
         enableNaming = true
         scanDependencies = false
+
+        contextConfigFile = 'jetty-context.xml'
         
         // Additional Java 24 compatibility settings
         jvmArgs = [

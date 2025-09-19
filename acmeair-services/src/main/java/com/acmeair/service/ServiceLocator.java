@@ -21,14 +21,15 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.util.AnnotationLiteral;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.Default;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.util.AnnotationLiteral;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -37,7 +38,7 @@ import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-
+@ApplicationScoped
 public class ServiceLocator {
 
 	public static String REPOSITORY_LOOKUP_KEY = "com.acmeair.repository.type";
@@ -48,7 +49,7 @@ public class ServiceLocator {
 
 	@Inject
 	BeanManager beanManager;
-	
+
 	public static ServiceLocator instance() {
 		if (singletonServiceLocator.get() == null) {
 			synchronized (singletonServiceLocator) {
@@ -58,27 +59,6 @@ public class ServiceLocator {
 			}
 		}
 		return singletonServiceLocator.get();
-	}
-	
-	@PostConstruct
-	private void initialization()  {		
-		if(beanManager == null){
-			logger.info("Attempting to look up BeanManager through JNDI at java:comp/BeanManager");
-			try {
-				beanManager = (BeanManager) new InitialContext().lookup("java:comp/BeanManager");
-			} catch (NamingException e) {
-				logger.severe("BeanManager not found at java:comp/BeanManager");
-			}
-		}
-		
-		if(beanManager == null){
-			logger.info("Attempting to look up BeanManager through JNDI at java:comp/env/BeanManager");
-			try {
-				beanManager = (BeanManager) new InitialContext().lookup("java:comp/env/BeanManager");
-			} catch (NamingException e) {
-				logger.severe("BeanManager not found at java:comp/env/BeanManager ");
-			}
-		}
 	}
 	
 	public static void updateService(String serviceName){
@@ -91,6 +71,19 @@ public class ServiceLocator {
 		String lookup = REPOSITORY_LOOKUP_KEY.replace('.', '/');
 		javax.naming.Context context = null;
 		javax.naming.Context envContext = null;
+
+		try {
+			// Try to manually initialize Weld
+			org.jboss.weld.environment.servlet.WeldServletLifecycle lifecycle = 
+				new org.jboss.weld.environment.servlet.WeldServletLifecycle();
+			
+			
+			beanManager = lifecycle.getBeanManager();
+			logger.info("Manual Weld initialization successful");
+		} catch (Exception e) {
+			logger.severe("Manual Weld initialization failed: " + e.getMessage());
+		}
+
 		try {
 			context = new javax.naming.InitialContext();
 			envContext = (javax.naming.Context) context.lookup("java:comp/env");
@@ -127,18 +120,22 @@ public class ServiceLocator {
 		if(beanManager == null) {
 			logger.info("Attempting to look up BeanManager through JNDI at java:comp/BeanManager");
 			try {
-				beanManager = (BeanManager) new InitialContext().lookup("java:comp/BeanManager");
-			} catch (NamingException e) {
-				logger.severe("BeanManager not found at java:comp/BeanManager");
+				beanManager = jakarta.enterprise.inject.spi.CDI.current().getBeanManager();
+				logger.info("BeanManager found via CDI.current()");
+				return;
+			} catch (Exception e) {
+				logger.info("CDI.current() failed: " + e.getMessage());
 			}
 		}	
 		
 		if(beanManager == null){
 			logger.info("Attempting to look up BeanManager through JNDI at java:comp/env/BeanManager");
+			// Fallback to JNDI
 			try {
-				beanManager = (BeanManager) new InitialContext().lookup("java:comp/env/BeanManager");
+				beanManager = (BeanManager) new InitialContext().lookup("java:comp/BeanManager");
+				logger.info("BeanManager found via JNDI");
 			} catch (NamingException e) {
-				logger.severe("BeanManager not found at java:comp/env/BeanManager ");
+				logger.severe("All BeanManager lookup methods failed");
 			}
 		}
 		
