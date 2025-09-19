@@ -7,7 +7,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 

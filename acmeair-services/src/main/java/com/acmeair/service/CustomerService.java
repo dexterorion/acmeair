@@ -18,7 +18,7 @@ package com.acmeair.service;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import com.acmeair.entities.Customer;
 import com.acmeair.entities.CustomerAddress;

@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import com.acmeair.entities.AirportCodeMapping;
 import com.acmeair.entities.Flight;

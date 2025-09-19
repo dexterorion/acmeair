@@ -15,8 +15,8 @@
 *******************************************************************************/
 package com.acmeair.web;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 
 import com.acmeair.entities.CustomerSession;
 import com.acmeair.service.*;

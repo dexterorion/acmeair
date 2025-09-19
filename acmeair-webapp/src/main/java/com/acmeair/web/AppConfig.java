@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ApplicationPath;
 
 import com.acmeair.config.AcmeAirConfiguration;
 import com.acmeair.config.LoaderREST;

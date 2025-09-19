@@ -17,9 +17,9 @@ package com.acmeair.web;
 
 import java.util.*;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
+import jakarta.ws.rs.core.Response.Status;
 
 import com.acmeair.entities.Booking;
 import com.acmeair.service.BookingService;

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import org.mongodb.morphia.Datastore;
 
@@ -31,7 +31,7 @@ public class BookingServiceImpl implements BookingService, MorphiaConstants {
 
 	//private final static Logger logger = Logger.getLogger(BookingService.class.getName()); 
 
-		
+	
 	Datastore datastore;
 	
 	@Inject 

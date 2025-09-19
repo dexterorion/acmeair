@@ -2,7 +2,7 @@ package com.acmeair.morphia.services;
 
 import java.util.Date;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import com.acmeair.entities.Customer;
 import com.acmeair.entities.Customer.MemberShipStatus;

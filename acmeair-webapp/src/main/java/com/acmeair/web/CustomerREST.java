@@ -15,16 +15,16 @@
 *******************************************************************************/
 package com.acmeair.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 
 import com.acmeair.entities.Customer;
 import com.acmeair.entities.CustomerAddress;
 import com.acmeair.service.*;
 import com.acmeair.web.dto.*;
 
-import javax.ws.rs.core.Context;
+import jakarta.ws.rs.core.Context;
 
 @Path("/customer")
 public class CustomerREST {

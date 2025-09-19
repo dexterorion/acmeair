@@ -15,29 +15,37 @@
   </filter-mapping>
   
   <servlet>
-    <servlet-name>JerseyServlet</servlet-name>
+    <servlet-name>AppConfig</servlet-name>
     <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
       <init-param>
         <!-- Points to your JAX-RS Application class -->
-        <param-name>javax.ws.rs.Application</param-name>
+        <param-name>jakarta.ws.rs.Application</param-name>
         <param-value>com.acmeair.web.AppConfig</param-value>
       </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
-    <servlet-name>com.acmeair.web.AppConfig</servlet-name>
+    <servlet-name>AppConfig</servlet-name>
     <url-pattern>/rest/info/*</url-pattern>
   </servlet-mapping>
 
-  <!-- Another servlet if needed (AcmeAirApp) -->
-  <servlet>
-      <servlet-name>AcmeAirApp</servlet-name>
-      <servlet-class>com.acmeair.web.AcmeAirApp</servlet-class>
-      <load-on-startup>2</load-on-startup>
+   <servlet>
+    <servlet-name>AcmeAirApp</servlet-name>
+    <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+      <init-param>
+        <!-- Points to your JAX-RS Application class -->
+        <param-name>jakarta.ws.rs.Application</param-name>
+        <param-value>com.acmeair.web.AcmeAirApp</param-value>
+      </init-param>
+    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
-      <servlet-name>AcmeAirApp</servlet-name>
-      <url-pattern>/rest/info/*</url-pattern>
+    <servlet-name>AcmeAirApp</servlet-name>
+    <url-pattern>/rest/api/*</url-pattern>
   </servlet-mapping>
   
+  <listener>
+    <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
+  </listener>
+
 </web-app>
