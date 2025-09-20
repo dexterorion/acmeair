@@ -7,7 +7,7 @@ There are two implementations of the application tier. Each application implemen
   - MongoDB
   - Cloudant
 - **Java**
-  - WebSphere Liberty Profile to Mongodb
+  - Jetty with MongoDB (using Morphia driver)
 
 ## System Requirements
 
@@ -139,13 +139,9 @@ docker exec -it acmeair-mongo mongosh
 3. **Java compatibility issues**: Ensure you're using Java 21 or higher
 4. **Build failures**: Run `./gradlew clean` before building
 
-## How to get started
+## Additional Resources
 
-* Instructions for [setting up and building the codebase](Documentation/Build_Instructions.md)
-* Websphere Liberty Profile to [MongoDB Instructions](https://github.com/acmeair/acmeair/blob/master/MONGO_README.md)
-* Deploying to [IBM Bluemix](Documentation/Bluemix_Instructions.md)
 * Acme Air for Node.js [Instructions](https://github.com/acmeair/acmeair-nodejs/blob/master/README.md)
-* Extending Acme Air by [adding additional data services.](Documentation/Extending_AcmeAir_Services.md)
 
 ## Ask Questions
 

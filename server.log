@@ -1,0 +1,83 @@
+> Task :acmeair-webapp:prepareInplaceWebAppFolder UP-TO-DATE
+> Task :acmeair-webapp:createInplaceWebAppFolder UP-TO-DATE
+> Task :acmeair-common:compileJava UP-TO-DATE
+> Task :acmeair-common:processResources NO-SOURCE
+> Task :acmeair-common:classes UP-TO-DATE
+> Task :acmeair-common:jar UP-TO-DATE
+> Task :acmeair-services:compileJava UP-TO-DATE
+> Task :acmeair-services:processResources UP-TO-DATE
+> Task :acmeair-services:classes UP-TO-DATE
+> Task :acmeair-services:jar UP-TO-DATE
+> Task :acmeair-loader:compileJava UP-TO-DATE
+> Task :acmeair-loader:processResources UP-TO-DATE
+> Task :acmeair-loader:classes UP-TO-DATE
+> Task :acmeair-loader:jar UP-TO-DATE
+> Task :acmeair-services-morphia:compileJava UP-TO-DATE
+> Task :acmeair-services-morphia:processResources UP-TO-DATE
+> Task :acmeair-services-morphia:classes UP-TO-DATE
+> Task :acmeair-services-morphia:jar UP-TO-DATE
+> Task :acmeair-webapp:compileJava UP-TO-DATE
+> Task :acmeair-webapp:processResources NO-SOURCE
+> Task :acmeair-webapp:classes UP-TO-DATE
+> Task :acmeair-webapp:prepareInplaceWebAppClasses UP-TO-DATE
+> Task :acmeair-webapp:prepareInplaceWebApp UP-TO-DATE
+2025-09-20 09:37:44.352:INFO :oejs.Server:main: jetty-11.0.17; built: 2023-10-09T18:39:14.424Z; git: 48e7716b9462bebea6732b885dbebb4300787a5c; jvm 21.0.8
+2025-09-20 09:37:44.366:INFO :oejs.AbstractConnector:main: Started ServerConnector@1ddd3478{HTTP/1.1, (http/1.1)}{0.0.0.0:8081}
+2025-09-20 09:37:44.374:INFO :oejs.Server:main: Started Server@576c5536{STARTING}[11.0.17,sto=0] @565ms
+SLF4J: A SLF4J service provider failed to instantiate:
+org.slf4j.spi.SLF4JServiceProvider: org.eclipse.jetty.logging.JettyLoggingServiceProvider not a subtype
+2025-09-20 09:37:44.748:INFO :oejss.DefaultSessionIdManager:main: Session workerName=node0
+Sep 20, 2025 9:37:44 AM com.acmeair.service.ServiceFactory <init>
+INFO: ServiceFactory initialized with service type: morphia
+Sep 20, 2025 9:37:44 AM com.acmeair.service.ServiceLocator <init>
+INFO: No service type specified, defaulting to: morphia
+Sep 20, 2025 9:37:44 AM com.acmeair.service.ServiceLocator <init>
+INFO: ServiceType is now : morphia
+Sep 20, 2025 9:37:44 AM org.mongodb.morphia.logging.MorphiaLoggerFactory chooseLoggerFactory
+INFO: LoggerImplFactory set to org.mongodb.morphia.logging.jdk.JDKLoggerFactory
+Sep 20, 2025 9:37:44 AM com.acmeair.morphia.services.util.MongoConnectionManager <init>
+WARNING: Resource Injection failed. Attempting to look up mongo/acmeairMongodb via JNDI.
+Sep 20, 2025 9:37:44 AM com.acmeair.morphia.services.util.MongoConnectionManager <init>
+SEVERE: Caught NamingException : mongo is not bound
+Sep 20, 2025 9:37:44 AM com.acmeair.morphia.services.util.MongoConnectionManager <init>
+INFO: Creating the MongoDB Client connection. Looking up host and port information
+Sep 20, 2025 9:37:44 AM com.acmeair.morphia.services.util.MongoConnectionManager <init>
+INFO: JNDI lookup failed, using default MongoDB connection: localhost:27017/acmeair
+09:37:44.868 [main] INFO org.mongodb.driver.cluster -- Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=50}
+09:37:44.877 [main] DEBUG org.mongodb.driver.cluster -- Updating cluster description to  {type=UNKNOWN, servers=[{address=localhost:27017, type=UNKNOWN, state=CONNECTING}]
+09:37:44.879 [main] INFO org.mongodb.driver.cluster -- Cluster description not yet available. Waiting for 30000 ms before timing out
+09:37:44.894 [cluster-ClusterId{value='68ceae289cb45040b84bfa2a', description='null'}-localhost:27017] INFO org.mongodb.driver.connection -- Opened connection [connectionId{localValue:1, serverValue:31}] to localhost:27017
+09:37:44.894 [cluster-ClusterId{value='68ceae289cb45040b84bfa2a', description='null'}-localhost:27017] DEBUG org.mongodb.driver.cluster -- Checking status of localhost:27017
+09:37:44.901 [cluster-ClusterId{value='68ceae289cb45040b84bfa2a', description='null'}-localhost:27017] DEBUG org.mongodb.driver.protocol.command -- Sending command '{"ismaster": 1, "$db": "admin"}' with request id 3 to database admin on connection [connectionId{localValue:1, serverValue:31}] to server localhost:27017
+09:37:44.902 [cluster-ClusterId{value='68ceae289cb45040b84bfa2a', description='null'}-localhost:27017] DEBUG org.mongodb.driver.protocol.command -- Execution of command with request id 3 completed successfully in 6.46 ms on connection [connectionId{localValue:1, serverValue:31}] to server localhost:27017
+09:37:44.903 [cluster-ClusterId{value='68ceae289cb45040b84bfa2a', description='null'}-localhost:27017] INFO org.mongodb.driver.cluster -- Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[8, 0, 13]}, minWireVersion=0, maxWireVersion=25, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=7845958}
+09:37:44.903 [cluster-ClusterId{value='68ceae289cb45040b84bfa2a', description='null'}-localhost:27017] DEBUG org.mongodb.driver.cluster -- Updating cluster description to  {type=STANDALONE, servers=[{address=localhost:27017, type=STANDALONE, roundTripTime=7.8 ms, state=CONNECTED}]
+Sep 20, 2025 9:37:44 AM com.acmeair.morphia.services.util.MongoConnectionManager <init>
+INFO: Successfully connected to MongoDB at localhost:27017/acmeair
+Sep 20, 2025 9:37:44 AM com.acmeair.morphia.services.util.MongoConnectionManager <init>
+INFO: Morphia datastore created successfully
+Sep 20, 2025 9:37:44 AM com.acmeair.morphia.services.util.MongoConnectionManager <init>
+INFO: created mongo datastore with options:MongoClientOptions{description='null', applicationName='null', compressors='[]', readPreference=primary, writeConcern=WriteConcern{w=0, wTimeout=0 ms, fsync=false, journal=null, retryWrites=true, retryReads=true, readConcern=com.mongodb.ReadConcern@0, codecRegistry=org.bson.internal.ProvidersCodecRegistry@8ff9d6fa, uuidRepresentation=JAVA_LEGACY, serverSelector=null, clusterListeners=[], commandListeners=[], minConnectionsPerHost=0, maxConnectionsPerHost=5, threadsAllowedToBlockForConnectionMultiplier=10, serverSelectionTimeout=30000, maxWaitTime=10000, maxConnectionIdleTime=0, maxConnectionLifeTime=0, connectTimeout=30000, socketTimeout=30000, socketKeepAlive=true, sslEnabled=false, sslInvalidHostNamesAllowed=false, sslContext=null, alwaysUseMBeans=false, heartbeatFrequency=10000, minHeartbeatFrequency=500, heartbeatConnectTimeout=20000, heartbeatSocketTimeout=20000, localThreshold=15, requiredReplicaSetName='null', dbDecoderFactory=com.mongodb.DefaultDBDecoder$1@27b337bb, dbEncoderFactory=com.mongodb.DefaultDBEncoder$1@59636c47, socketFactory=null, cursorFinalizerEnabled=true, connectionPoolSettings=ConnectionPoolSettings{maxSize=5, minSize=0, maxWaitQueueSize=50, maxWaitTimeMS=10000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[]}, socketSettings=SocketSettings{connectTimeoutMS=30000, readTimeoutMS=30000, keepAlive=true, receiveBufferSize=0, sendBufferSize=0}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverListeners='[]', serverMonitorListeners='[]'}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=20000, readTimeoutMS=20000, keepAlive=true, receiveBufferSize=0, sendBufferSize=0}, autoEncryptionSettings=null}
+Sep 20, 2025 9:37:44 AM com.acmeair.service.ServiceFactory callPostConstruct
+INFO: Called @PostConstruct initialization for CustomerServiceImpl
+2025-09-20 09:37:45.281:INFO :oejsh.ContextHandler:main: Started o.a.g.JettyWebAppContext@9e2ad91{acmeair-webapp,/,file:///Users/viniciusnordiesperanca/Desktop/doutorado/acmeair/acmeair-webapp/build/inplaceWebapp/,AVAILABLE}
+2025-09-20 09:37:45.285:INFO :oag.JettyConfigurerImpl:main: Jetty 11.0.17 started and listening on port 8081
+2025-09-20 09:37:45.290:INFO :oag.JettyConfigurerImpl:main: acmeair-webapp runs at:
+2025-09-20 09:37:45.291:INFO :oag.JettyConfigurerImpl:main:   http://localhost:8081/
+2025-09-20 09:37:45.309:INFO :oejs.Server:main: Stopped Server@576c5536{STOPPING}[11.0.17,sto=0]
+2025-09-20 09:37:45.312:INFO :oejs.AbstractConnector:main: Stopped ServerConnector@1ddd3478{HTTP/1.1, (http/1.1)}{0.0.0.0:8081}
+2025-09-20 09:37:45.317:INFO :oejsh.ContextHandler:main: Stopped o.a.g.JettyWebAppContext@9e2ad91{acmeair-webapp,/,file:///Users/viniciusnordiesperanca/Desktop/doutorado/acmeair/acmeair-webapp/build/inplaceWebapp/,STOPPED}
+
+> Task :acmeair-webapp:appRun
+Press any key to stop the server.
+
+[Incubating] Problems report is available at: file:///Users/viniciusnordiesperanca/Desktop/doutorado/acmeair/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 1s
+15 actionable tasks: 1 executed, 14 up-to-date
