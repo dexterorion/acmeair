@@ -18,7 +18,7 @@ package com.acmeair.service;
 import java.util.Calendar;
 import java.util.Date;
 
-import jakarta.inject.Inject;
+// Inject removed - using direct instantiation
 
 import com.acmeair.entities.Customer;
 import com.acmeair.entities.CustomerAddress;
@@ -29,8 +29,12 @@ import com.acmeair.entities.CustomerSession;
 public abstract class CustomerService {
 	protected static final int DAYS_TO_ALLOW_SESSION = 1;
 	
-	@Inject
 	protected KeyGenerator keyGenerator;
+
+	public CustomerService() {
+		// Initialize KeyGenerator directly
+		this.keyGenerator = new KeyGenerator();
+	}
 	
 	public abstract Customer createCustomer(
 			String username, String password, MemberShipStatus status, int total_miles,

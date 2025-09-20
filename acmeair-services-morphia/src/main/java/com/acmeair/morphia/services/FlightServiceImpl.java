@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
+// Inject removed - using direct instantiation
 
 import com.acmeair.entities.AirportCodeMapping;
 import com.acmeair.entities.Flight;
@@ -45,14 +45,14 @@ public class FlightServiceImpl extends FlightService implements  MorphiaConstant
 		
 	Datastore datastore;
 	
-	@Inject
 	KeyGenerator keyGenerator;
 	
 
 	
 	@PostConstruct
-	public void initialization() {	
+	public void initialization() {
 		datastore = MongoConnectionManager.getConnectionManager().getDatastore();
+		keyGenerator = new KeyGenerator();
 	}
 	
 	

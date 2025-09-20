@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
+// Inject removed - using direct instantiation
 
 import org.mongodb.morphia.Datastore;
 
@@ -34,7 +34,6 @@ public class BookingServiceImpl implements BookingService, MorphiaConstants {
 	
 	Datastore datastore;
 	
-	@Inject 
 	KeyGenerator keyGenerator;
 	
 	private FlightService flightService = ServiceLocator.instance().getService(FlightService.class);
@@ -42,8 +41,9 @@ public class BookingServiceImpl implements BookingService, MorphiaConstants {
 
 
 	@PostConstruct
-	public void initialization() {	
-		datastore = MongoConnectionManager.getConnectionManager().getDatastore();	
+	public void initialization() {
+		datastore = MongoConnectionManager.getConnectionManager().getDatastore();
+		keyGenerator = new KeyGenerator();
 	}	
 	
 	

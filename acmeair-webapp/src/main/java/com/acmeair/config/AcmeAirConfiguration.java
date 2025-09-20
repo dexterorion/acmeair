@@ -5,8 +5,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.inject.spi.BeanManager;
-import jakarta.inject.Inject;
+// BeanManager and Inject removed - using simple factory pattern
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import jakarta.ws.rs.GET;
@@ -23,8 +22,7 @@ import com.acmeair.service.ServiceLocator;
 @Path("/config")
 public class AcmeAirConfiguration {
     
-	@Inject
-	BeanManager beanManager;
+	// BeanManager removed - not needed with factory pattern
 	Logger logger = Logger.getLogger(AcmeAirConfiguration.class.getName());
 
 	private BookingService bs = ServiceLocator.instance().getService(BookingService.class);
@@ -37,24 +35,8 @@ public class AcmeAirConfiguration {
     }
 
 	@PostConstruct
-	private void initialization()  {		
-		if(beanManager == null){
-			logger.info("Attempting to look up BeanManager through JNDI at java:comp/BeanManager");
-			try {
-				beanManager = (BeanManager) new InitialContext().lookup("java:comp/BeanManager");
-			} catch (NamingException e) {
-				logger.severe("BeanManager not found at java:comp/BeanManager");
-			}
-		}
-		
-		if(beanManager == null){
-			logger.info("Attempting to look up BeanManager through JNDI at java:comp/env/BeanManager");
-			try {
-				beanManager = (BeanManager) new InitialContext().lookup("java:comp/env/BeanManager");
-			} catch (NamingException e) {
-				logger.severe("BeanManager not found at java:comp/env/BeanManager ");
-			}
-		}
+	private void initialization()  {
+		logger.info("AcmeAirConfiguration initialized with factory pattern");
 	}
     
     

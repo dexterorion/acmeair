@@ -7,7 +7,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
-import jakarta.annotation.Resource;
+// Resource injection removed - using direct instantiation
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -33,7 +33,6 @@ public class MongoConnectionManager implements MorphiaConstants{
 	
 	private final static Logger logger = Logger.getLogger(MongoConnectionManager.class.getName());
 	
-	@Resource(name = JNDI_NAME)
 	protected DB db;
 	private static Datastore datastore;
 	
@@ -57,14 +56,15 @@ public class MongoConnectionManager implements MorphiaConstants{
 		int w = 0;
 		int connectionsPerHost = 5;
 		int threadsAllowedToBlockForConnectionMultiplier = 10;
-		int connectTimeout= 0;
-		int socketTimeout= 0;
+		int connectTimeout= 30000;  // 30 seconds timeout instead of 0
+		int socketTimeout= 30000;   // 30 seconds socket timeout
 		boolean socketKeepAlive = true;
-		int maxWaitTime = 2000;
+		int maxWaitTime = 10000;    // 10 seconds max wait time
 
 
 		Properties prop = new Properties();
 		URL mongoPropertyFile = MongoConnectionManager.class.getResource("/com/acmeair/morphia/services/util/mongo.properties");
+
 		if(mongoPropertyFile != null){
 			try {
 				logger.info("Reading mongo.properties file");
@@ -135,35 +135,61 @@ public class MongoConnectionManager implements MorphiaConstants{
 				}
 
 				if(db == null){
-					String host; 
-					String port;
-					String database;
-					logger.info("Creating the MongoDB Client connection. Looking up host and port information " );
-					try {	        	
-						host = (String) new InitialContext().lookup("java:comp/env/" + HOSTNAME);
-						port = (String) new InitialContext().lookup("java:comp/env/" + PORT);
-						database = (String) new InitialContext().lookup("java:comp/env/" + DATABASE);
+					String host = "localhost";
+					String port = "27017";
+					String database = "acmeair";
+
+					logger.info("Creating the MongoDB Client connection. Looking up host and port information" );
+					try {
+						// Try JNDI first, fallback to defaults
+						try {
+							host = (String) new InitialContext().lookup("java:comp/env/" + HOSTNAME);
+							port = (String) new InitialContext().lookup("java:comp/env/" + PORT);
+							database = (String) new InitialContext().lookup("java:comp/env/" + DATABASE);
+							logger.info("Using JNDI configuration: " + host + ":" + port + "/" + database);
+						} catch (NamingException ne) {
+							logger.info("JNDI lookup failed, using default MongoDB connection: " + host + ":" + port + "/" + database);
+						}
+
 						ServerAddress server = new ServerAddress(host, Integer.parseInt(port));
-						MongoClient mongo = new MongoClient(server);
-						db = mongo.getDB(database);
-					} catch (NamingException e) {
-						logger.severe("Caught NamingException : " + e.getMessage() );			
+						MongoClient mongo = new MongoClient(server, builder.build());
+
+						// Test the connection
+						try {
+							mongo.getAddress(); // This will throw if can't connect
+							db = mongo.getDB(database);
+							logger.info("Successfully connected to MongoDB at " + host + ":" + port + "/" + database);
+						} catch (Exception connEx) {
+							logger.warning("Failed to connect to MongoDB at " + host + ":" + port + " - " + connEx.getMessage());
+							mongo.close();
+							throw connEx;
+						}
 					} catch (Exception e) {
-						logger.severe("Caught Exception : " + e.getMessage() );
+						logger.severe("Failed to connect to MongoDB: " + e.getMessage() );
+						e.printStackTrace();
 					}
 				}
 
 				if(db == null){
-					logger.severe("Unable to retreive reference to database, please check the server logs.");
+					logger.severe("Unable to retrieve reference to database, please check the server logs.");
+					logger.severe("Make sure MongoDB is running on localhost:27017 or configure proper connection details.");
 				} else {
-					
-					morphia.getMapper().getConverters().addConverter(new BigDecimalConverter());
-					datastore = morphia.createDatastore(new MongoClient(db.getMongo().getConnectPoint(),builder.build()), db.getName());
+					try {
+						morphia.getMapper().getConverters().addConverter(new BigDecimalConverter());
+						// Create datastore directly from the existing MongoDB connection
+						// Cast Mongo to MongoClient (they are compatible in this version)
+						MongoClient mongoClient = (MongoClient) db.getMongo();
+						datastore = morphia.createDatastore(mongoClient, db.getName());
+						logger.info("Morphia datastore created successfully");
+					} catch (Exception e) {
+						logger.severe("Failed to create Morphia datastore: " + e.getMessage());
+						e.printStackTrace();
+					}
 				}
 			}
-		} catch (UnknownHostException e) {
-			logger.severe("Caught Exception : " + e.getMessage() );				
-		}			
+		} catch (Exception e) {
+			logger.severe("Caught Exception : " + e.getMessage() );
+		}
 
 		logger.info("created mongo datastore with options:"+datastore.getMongo().getMongoClientOptions());
 	}
@@ -178,7 +204,8 @@ public class MongoConnectionManager implements MorphiaConstants{
 	
 	@SuppressWarnings("deprecation")
 	public String getDriverVersion(){
-		return datastore.getMongo().getVersion();
+		// MongoDB driver version is not directly available in newer drivers
+		return "3.12.14";
 	}
 	
 	public String getMongoVersion(){

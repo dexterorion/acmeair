@@ -15,30 +15,14 @@
 *******************************************************************************/
 package com.acmeair.service;
 
-import java.lang.annotation.Annotation;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.spi.CreationalContext;
-import jakarta.enterprise.inject.Any;
-import jakarta.enterprise.inject.Default;
-import jakarta.enterprise.inject.spi.Bean;
-import jakarta.enterprise.inject.spi.BeanManager;
-import jakarta.enterprise.util.AnnotationLiteral;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-@ApplicationScoped
 public class ServiceLocator {
 
 	public static String REPOSITORY_LOOKUP_KEY = "com.acmeair.repository.type";
@@ -47,8 +31,7 @@ public class ServiceLocator {
 
 	private static AtomicReference<ServiceLocator> singletonServiceLocator = new AtomicReference<ServiceLocator>();
 
-	@Inject
-	BeanManager beanManager;
+	private ServiceFactory serviceFactory;
 
 	public static ServiceLocator instance() {
 		if (singletonServiceLocator.get() == null) {
@@ -60,200 +43,78 @@ public class ServiceLocator {
 		}
 		return singletonServiceLocator.get();
 	}
-	
+
 	public static void updateService(String serviceName){
 		logger.info("Service Locator updating service to : " + serviceName);
 		serviceType = serviceName;
+		// Update the factory as well
+		ServiceLocator locator = instance();
+		if (locator.serviceFactory != null) {
+			locator.serviceFactory.setServiceType(serviceName);
+		}
 	}
 
 	private ServiceLocator() {
+		serviceFactory = ServiceFactory.getInstance();
+
 		String type = null;
-		String lookup = REPOSITORY_LOOKUP_KEY.replace('.', '/');
-		javax.naming.Context context = null;
-		javax.naming.Context envContext = null;
 
-		try {
-			// Try to manually initialize Weld
-			org.jboss.weld.environment.servlet.WeldServletLifecycle lifecycle = 
-				new org.jboss.weld.environment.servlet.WeldServletLifecycle();
-			
-			
-			beanManager = lifecycle.getBeanManager();
-			logger.info("Manual Weld initialization successful");
-		} catch (Exception e) {
-			logger.severe("Manual Weld initialization failed: " + e.getMessage());
-		}
-
-		try {
-			context = new javax.naming.InitialContext();
-			envContext = (javax.naming.Context) context.lookup("java:comp/env");
-			if (envContext != null)
-				type = (String) envContext.lookup(lookup);
-		} catch (NamingException e) {
-			// e.printStackTrace();
-		}
-		
+		// Try various ways to get service type
+		type = System.getProperty(REPOSITORY_LOOKUP_KEY);
 		if (type != null) {
-			logger.info("Found repository in web.xml:" + type);
-		}
-		else if (context != null) {
-			try {
-				type = (String) context.lookup(lookup);
-				if (type != null)
-					logger.info("Found repository in server.xml:" + type);
-			} catch (NamingException e) {
-				// e.printStackTrace();
+			logger.info("Found repository in jvm property:" + type);
+		} else {
+			type = System.getenv(REPOSITORY_LOOKUP_KEY);
+			if (type != null) {
+				logger.info("Found repository in environment property:" + type);
 			}
 		}
 
+		// Check VCAP_SERVICES for cloud deployment
 		if (type == null) {
-			type = System.getProperty(REPOSITORY_LOOKUP_KEY);
-			if (type != null)
-				logger.info("Found repository in jvm property:" + type);
-			else {
-				type = System.getenv(REPOSITORY_LOOKUP_KEY);
-				if (type != null)
-					logger.info("Found repository in environment property:" + type);
-			}
-		}
-
-		if(beanManager == null) {
-			logger.info("Attempting to look up BeanManager through JNDI at java:comp/BeanManager");
-			try {
-				beanManager = jakarta.enterprise.inject.spi.CDI.current().getBeanManager();
-				logger.info("BeanManager found via CDI.current()");
-				return;
-			} catch (Exception e) {
-				logger.info("CDI.current() failed: " + e.getMessage());
-			}
-		}	
-		
-		if(beanManager == null){
-			logger.info("Attempting to look up BeanManager through JNDI at java:comp/env/BeanManager");
-			// Fallback to JNDI
-			try {
-				beanManager = (BeanManager) new InitialContext().lookup("java:comp/BeanManager");
-				logger.info("BeanManager found via JNDI");
-			} catch (NamingException e) {
-				logger.severe("All BeanManager lookup methods failed");
-			}
-		}
-		
-		if (type==null)
-		{
 			String vcapJSONString = System.getenv("VCAP_SERVICES");
 			if (vcapJSONString != null) {
 				logger.info("Reading VCAP_SERVICES");
 				Object jsonObject = JSONValue.parse(vcapJSONString);
-				logger.fine("jsonObject = " + ((JSONObject)jsonObject).toJSONString());
 				JSONObject json = (JSONObject)jsonObject;
 				String key;
-				for (Object k: json.keySet())
-				{
+				for (Object k: json.keySet()) {
 					key = (String ) k;
-					if (key.startsWith("ElasticCaching")||key.startsWith("DataCache"))
-					{
+					if (key.startsWith("mongo")) {
 						logger.info("VCAP_SERVICES existed with service:"+key);
-						type ="wxs";
+						type = "morphia";
 						break;
 					}
-					if (key.startsWith("mongo"))
-					{
-						logger.info("VCAP_SERVICES existed with service:"+key);
-						type ="morphia";
-						break;
-					}
-					if (key.startsWith("redis"))
-					{
-						logger.info("VCAP_SERVICES existed with service:"+key);
-						type ="redis";
-						break;
-					}
-					if (key.startsWith("mysql")|| key.startsWith("cleardb"))
-					{
-						logger.info("VCAP_SERVICES existed with service:"+key);
-						type ="mysql";
-						break;
-					}
-					if (key.startsWith("postgresql"))
-					{
-						logger.info("VCAP_SERVICES existed with service:"+key);
-						type ="postgresql";
-						break;
-					}
-					if (key.startsWith("db2"))
-					{
-						logger.info("VCAP_SERVICES existed with service:"+key);
-						type ="db2";
-						break;
-					}
+					// Add other service types as needed
 				}
 			}
 		}
-				
-		serviceType = type;
-		logger.info("ServiceType is now : " + serviceType);
-		if (type ==null) {
-			logger.warning("Can not determine type. Use default service implementation.");			
+
+		// Default to morphia if nothing specified
+		if (type == null) {
+			type = "morphia";
+			logger.info("No service type specified, defaulting to: " + type);
 		}
+
+		serviceType = type;
+		serviceFactory.setServiceType(type);
+		logger.info("ServiceType is now : " + serviceType);
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T getService (Class<T> clazz) {		
+	public <T> T getService (Class<T> clazz) {
 		logger.fine("Looking up service:  "+clazz.getName() + " with service type: " + serviceType);
-		if(beanManager == null) {
-			logger.severe("BeanManager is null!!!");
-		}		
-    	Set<Bean<?>> beans = beanManager.getBeans(clazz,new AnnotationLiteral<Any>() {
-			private static final long serialVersionUID = 1L;});
-    	for (Bean<?> bean : beans) {
-    		logger.fine(" Bean = "+bean.getBeanClass().getName());
-    		for (Annotation qualifer: bean.getQualifiers()) {
-    			if(null == serviceType) {
-    				logger.warning("Service type is not set, searching for the default implementation.");
-    				if(Default.class.getName().equalsIgnoreCase(qualifer.annotationType().getName())){
-    					CreationalContext<?> ctx = beanManager.createCreationalContext(bean);
-    					return  (T) beanManager.getReference(bean, clazz, ctx);
-    				}
-    			} else {    				   
-    				if(DataService.class.getName().equalsIgnoreCase(qualifer.annotationType().getName())){
-    					DataService service = (DataService) qualifer;
-    					logger.fine("   name="+service.name()+" description="+service.description());
-    					if(serviceType.equalsIgnoreCase(service.name())) {
-    						CreationalContext<?> ctx = beanManager.createCreationalContext(bean);
-    						return  (T) beanManager.getReference(bean, clazz, ctx);
-
-    					}
-    				}
-    			}
-    		}
-    	}
-    	logger.warning("No Service of type: " + serviceType + " found for "+clazz.getName()+" ");
-    	return null;
+		return serviceFactory.getService(clazz);
 	}
 	
 	/**
-	 * Retrieves the services that are available for use with the description for each service. 
-	 * The Services are determined by looking up all of the implementations of the 
-	 * Customer Service interface that are using the  DataService qualifier annotation. 
-	 * The DataService annotation contains the service name and description information. 
+	 * Retrieves the services that are available for use with the description for each service.
 	 * @return Map containing a list of services available and a description of each one.
 	 */
 	public Map<String,String> getServices (){
 		TreeMap<String,String> services = new TreeMap<String,String>();
-		logger.fine("Getting CustomerService Impls");
-    	Set<Bean<?>> beans = beanManager.getBeans(CustomerService.class,new AnnotationLiteral<Any>() {
-			private static final long serialVersionUID = 1L;});
-    	for (Bean<?> bean : beans) {    		
-    		for (Annotation qualifer: bean.getQualifiers()){
-    			if(DataService.class.getName().equalsIgnoreCase(qualifer.annotationType().getName())){
-    				DataService service = (DataService) qualifer;
-    				logger.fine("   name="+service.name()+" description="+service.description());
-    				services.put(service.name(), service.description());
-    			}
-    		}
-    	}    	
-    	return services;
+		// For now, just return the current service type
+		services.put(serviceType, "MongoDB/Morphia implementation");
+		return services;
 	}
 	
 	/**

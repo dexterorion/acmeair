@@ -17,8 +17,7 @@ package com.acmeair.web;
 
 import java.io.IOException;
 
-import jakarta.enterprise.inject.spi.BeanManager;
-import jakarta.inject.Inject;
+// BeanManager and Inject removed - using simple factory pattern
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -44,8 +43,7 @@ public class RESTCookieSessionFilter implements Filter {
 	private CustomerService customerService = ServiceLocator.instance().getService(CustomerService.class);
 	private TransactionService transactionService = ServiceLocator.instance().getService(TransactionService.class);; 
 
-	@Inject
-	BeanManager beanManager;
+	// BeanManager removed - not needed with factory pattern
 	
 	@Override
 	public void destroy() {

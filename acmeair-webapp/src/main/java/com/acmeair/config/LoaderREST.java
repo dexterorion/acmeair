@@ -1,6 +1,6 @@
 package com.acmeair.config;
 
-import jakarta.inject.Inject;
+// Inject removed - using direct instantiation
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -16,8 +16,7 @@ public class LoaderREST {
 
 //	private static Logger logger = Logger.getLogger(LoaderREST.class.getName());
 	
-	@Inject
-	private Loader loader;	
+	private Loader loader = new Loader();	
 	
 	@GET
 	@Path("/query")
