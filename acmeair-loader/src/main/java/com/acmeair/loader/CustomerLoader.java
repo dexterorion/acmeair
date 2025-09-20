@@ -19,12 +19,16 @@ import com.acmeair.entities.Customer;
 import com.acmeair.entities.CustomerAddress;
 import com.acmeair.entities.Customer.PhoneType;
 import com.acmeair.service.CustomerService;
-import com.acmeair.service.ServiceLocator;
+import com.acmeair.service.ServiceProvider;
 
 
 public class CustomerLoader {
 
-	private CustomerService customerService = ServiceLocator.instance().getService(CustomerService.class);
+	private final CustomerService customerService;
+
+	public CustomerLoader() {
+		this.customerService = ServiceProvider.Services.customerService();
+	}
 
 	
 	public void loadCustomers(long numCustomers) {

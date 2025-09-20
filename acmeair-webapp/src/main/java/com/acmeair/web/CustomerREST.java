@@ -22,14 +22,19 @@ import jakarta.ws.rs.core.*;
 import com.acmeair.entities.Customer;
 import com.acmeair.entities.CustomerAddress;
 import com.acmeair.service.*;
+import com.acmeair.service.ServiceProvider;
 import com.acmeair.web.dto.*;
 
 import jakarta.ws.rs.core.Context;
 
 @Path("/customer")
 public class CustomerREST {
-	
-	private CustomerService customerService = ServiceLocator.instance().getService(CustomerService.class);
+
+	private final CustomerService customerService;
+
+	public CustomerREST() {
+		this.customerService = ServiceProvider.Services.customerService();
+	}
 	
 	@Context 
 	private HttpServletRequest request;

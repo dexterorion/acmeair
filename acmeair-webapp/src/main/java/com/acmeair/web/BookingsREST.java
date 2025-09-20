@@ -23,14 +23,18 @@ import jakarta.ws.rs.core.Response.Status;
 
 import com.acmeair.entities.Booking;
 import com.acmeair.service.BookingService;
-import com.acmeair.service.ServiceLocator;
+import com.acmeair.service.ServiceProvider;
 import com.acmeair.web.dto.BookingInfo;
 import com.acmeair.web.dto.BookingReceiptInfo;
 
 @Path("/bookings")
 public class BookingsREST {
-	
-	private BookingService bs = ServiceLocator.instance().getService(BookingService.class);
+
+	private final BookingService bookingService;
+
+	public BookingsREST() {
+		this.bookingService = ServiceProvider.Services.bookingService();
+	}
 	
 	@POST
 	@Consumes({"application/x-www-form-urlencoded"})
@@ -44,10 +48,10 @@ public class BookingsREST {
 			@FormParam("retFlightSegId") String retFlightSegId,
 			@FormParam("oneWayFlight") boolean oneWay) {
 		try {
-			String bookingIdTo = bs.bookFlight(userid, toFlightSegId, toFlightId);
+			String bookingIdTo = bookingService.bookFlight(userid, toFlightSegId, toFlightId);
 			String bookingIdReturn = null;
 			if (!oneWay) {
-				bookingIdReturn = bs.bookFlight(userid, retFlightSegId, retFlightId);
+				bookingIdReturn = bookingService.bookFlight(userid, retFlightSegId, retFlightId);
 			}
 			// YL. BookingInfo will only contains the booking generated keys as customer info is always available from the session
 			BookingReceiptInfo bi;
@@ -71,7 +75,7 @@ public class BookingsREST {
 			@PathParam("number") String number,
 			@PathParam("userid") String userid) {
 		try {
-			Booking b = bs.getBooking(userid, number);
+			Booking b = bookingService.getBooking(userid, number);
 			BookingInfo bi = null;
 			if(b != null){
 				bi = new BookingInfo(b);
@@ -89,7 +93,7 @@ public class BookingsREST {
 	@Produces("application/json")
 	public List<BookingInfo> getBookingsByUser(@PathParam("user") String user) {
 		try {
-			List<Booking> list =  bs.getBookingsByUser(user);
+			List<Booking> list =  bookingService.getBookingsByUser(user);
 			List<BookingInfo> newList = new ArrayList<BookingInfo>();
 			for(Booking b : list){
 				newList.add(new BookingInfo(b));
@@ -110,7 +114,7 @@ public class BookingsREST {
 			@FormParam("number") String number,
 			@FormParam("userid") String userid) {
 		try {
-			bs.cancelBooking(userid, number);
+			bookingService.cancelBooking(userid, number);
 			return Response.ok("booking " + number + " deleted.").build();
 					
 		}

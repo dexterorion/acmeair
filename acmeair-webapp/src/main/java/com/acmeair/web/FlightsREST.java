@@ -26,14 +26,18 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import com.acmeair.entities.Flight;
 import com.acmeair.service.FlightService;
-import com.acmeair.service.ServiceLocator;
+import com.acmeair.service.ServiceProvider;
 import com.acmeair.web.dto.TripFlightOptions;
 import com.acmeair.web.dto.TripLegInfo;
 
 @Path("/flights")
 public class FlightsREST {
-	
-	private FlightService flightService = ServiceLocator.instance().getService(FlightService.class);
+
+	private final FlightService flightService;
+
+	public FlightsREST() {
+		this.flightService = ServiceProvider.Services.flightService();
+	}
 	
 	// TODO:  Consider a pure GET implementation of this service, but maybe not much value due to infrequent similar searches
 	@POST

@@ -30,7 +30,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import com.acmeair.entities.CustomerSession;
 import com.acmeair.service.CustomerService;
-import com.acmeair.service.ServiceLocator;
+import com.acmeair.service.ServiceProvider;
 import com.acmeair.service.TransactionService;
 
 public class RESTCookieSessionFilter implements Filter {
@@ -40,8 +40,13 @@ public class RESTCookieSessionFilter implements Filter {
 	private static final String LOGOUT_PATH = "/rest/api/login/logout";
 	private static final String LOADDB_PATH = "/rest/api/loaddb";
 	
-	private CustomerService customerService = ServiceLocator.instance().getService(CustomerService.class);
-	private TransactionService transactionService = ServiceLocator.instance().getService(TransactionService.class);; 
+	private final CustomerService customerService;
+	private final TransactionService transactionService;
+
+	public RESTCookieSessionFilter() {
+		this.customerService = ServiceProvider.Services.customerService();
+		this.transactionService = ServiceProvider.Services.transactionService();
+	} 
 
 	// BeanManager removed - not needed with factory pattern
 	

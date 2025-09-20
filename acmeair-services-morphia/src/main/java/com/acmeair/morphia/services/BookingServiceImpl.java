@@ -20,7 +20,7 @@ import com.acmeair.service.CustomerService;
 import com.acmeair.service.DataService;
 import com.acmeair.service.FlightService;
 import com.acmeair.service.KeyGenerator;
-import com.acmeair.service.ServiceLocator;
+import com.acmeair.service.ServiceProvider;
 
 import org.mongodb.morphia.query.Query;
 
@@ -36,8 +36,23 @@ public class BookingServiceImpl implements BookingService, MorphiaConstants {
 	
 	KeyGenerator keyGenerator;
 	
-	private FlightService flightService = ServiceLocator.instance().getService(FlightService.class);
-	private CustomerService customerService = ServiceLocator.instance().getService(CustomerService.class);
+	private FlightService flightService;
+	private CustomerService customerService;
+
+	// Lazy initialization to avoid circular dependencies
+	private FlightService getFlightService() {
+		if (flightService == null) {
+			flightService = ServiceProvider.Services.flightService();
+		}
+		return flightService;
+	}
+
+	private CustomerService getCustomerService() {
+		if (customerService == null) {
+			customerService = ServiceProvider.Services.customerService();
+		}
+		return customerService;
+	}
 
 
 	@PostConstruct
@@ -50,8 +65,8 @@ public class BookingServiceImpl implements BookingService, MorphiaConstants {
 	
 	public String bookFlight(String customerId, String flightId) {
 		try{
-			Flight f = flightService.getFlightByFlightId(flightId, null);
-			Customer c = customerService.getCustomerByUsername(customerId);
+			Flight f = getFlightService().getFlightByFlightId(flightId, null);
+			Customer c = getCustomerService().getCustomerByUsername(customerId);
 			
 			Booking newBooking = new BookingImpl(keyGenerator.generate().toString(), new Date(), c, f);
 

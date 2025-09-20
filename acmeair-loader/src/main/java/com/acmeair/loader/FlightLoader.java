@@ -23,7 +23,7 @@ import java.math.*;
 
 import com.acmeair.entities.AirportCodeMapping;
 import com.acmeair.service.FlightService;
-import com.acmeair.service.ServiceLocator;
+import com.acmeair.service.ServiceProvider;
 
 
 
@@ -33,7 +33,11 @@ public class FlightLoader {
 	private static final int MAX_FLIGHTS_PER_SEGMENT = 30;
 	
 
-	private FlightService flightService = ServiceLocator.instance().getService(FlightService.class);
+	private final FlightService flightService;
+
+	public FlightLoader() {
+		this.flightService = ServiceProvider.Services.flightService();
+	}
 
 	public void loadFlights() throws Exception {
 		InputStream csvInputStream = FlightLoader.class.getResourceAsStream("/mileage.csv");

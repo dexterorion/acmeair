@@ -20,6 +20,7 @@ import jakarta.ws.rs.core.*;
 
 import com.acmeair.entities.CustomerSession;
 import com.acmeair.service.*;
+import com.acmeair.service.ServiceProvider;
 
 
 @Path("/login")
@@ -27,7 +28,11 @@ public class LoginREST {
 	
 	public static String SESSIONID_COOKIE_NAME = "sessionid";
 	
-	private CustomerService customerService = ServiceLocator.instance().getService(CustomerService.class);
+	private final CustomerService customerService;
+
+	public LoginREST() {
+		this.customerService = ServiceProvider.Services.customerService();
+	}
 	
 	
 	@POST

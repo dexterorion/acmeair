@@ -16,7 +16,8 @@ import jakarta.ws.rs.core.Response;
 import com.acmeair.service.BookingService;
 import com.acmeair.service.CustomerService;
 import com.acmeair.service.FlightService;
-import com.acmeair.service.ServiceLocator;
+import com.acmeair.service.ServiceProvider;
+import com.acmeair.service.ServiceRegistry;
 
 
 @Path("/config")
@@ -25,14 +26,17 @@ public class AcmeAirConfiguration {
 	// BeanManager removed - not needed with factory pattern
 	Logger logger = Logger.getLogger(AcmeAirConfiguration.class.getName());
 
-	private BookingService bs = ServiceLocator.instance().getService(BookingService.class);
-	private CustomerService customerService = ServiceLocator.instance().getService(CustomerService.class);
-	private FlightService flightService = ServiceLocator.instance().getService(FlightService.class);
+	private final BookingService bookingService;
+	private final CustomerService customerService;
+	private final FlightService flightService;
+
+	public AcmeAirConfiguration() {
+		this.bookingService = ServiceProvider.Services.bookingService();
+		this.customerService = ServiceProvider.Services.customerService();
+		this.flightService = ServiceProvider.Services.flightService();
+	}
 
 
-    public AcmeAirConfiguration() {
-        super();
-    }
 
 	@PostConstruct
 	private void initialization()  {
@@ -46,7 +50,7 @@ public class AcmeAirConfiguration {
 	public ArrayList<ServiceData> getDataServiceInfo() {
 		try {	
 			ArrayList<ServiceData> list = new ArrayList<ServiceData>();
-			Map<String, String> services =  ServiceLocator.instance().getServices();
+			Map<String, String> services =  Map.of("morphia", "MongoDB/Morphia implementation");
 			logger.fine("Get data service configuration info");
 			for (Map.Entry<String, String> entry : services.entrySet()){
 				ServiceData data = new ServiceData();
@@ -70,7 +74,7 @@ public class AcmeAirConfiguration {
 	public Response getActiveDataServiceInfo() {
 		try {		
 			logger.fine("Get active Data Service info");
-			return  Response.ok(ServiceLocator.instance().getServiceType()).build();
+			return  Response.ok("morphia").build();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -119,7 +123,7 @@ public class AcmeAirConfiguration {
 	@Produces("application/json")
 	public Response countBookings() {
 		try {
-			Long count = bs.count();			
+			Long count = bookingService.count();			
 			return Response.ok(count).build();
 		}
 		catch (Exception e) {
