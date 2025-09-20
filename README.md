@@ -9,6 +9,13 @@ There are two implementations of the application tier. Each application implemen
 - **Java**
   - WebSphere Liberty Profile to Mongodb
 
+## System Requirements
+
+- **Java**: OpenJDK 21+ (tested with OpenJDK 21.0.8)
+- **Gradle**: 8.14.3 (included via Gradle Wrapper)
+- **MongoDB**: 3.x or higher
+- **Docker**: For running MongoDB in containers (optional)
+
 ## Repository Contents
 
 Source:
@@ -18,6 +25,119 @@ Source:
 - **acmeair-services**:  The Java data services interface definitions
 - **acmeair-service-morphia**:  A mongodb data service implementation
 - **acmeair-webapp**:  The Web 2.0 application and associated Java REST services
+
+## Quick Start Guide
+
+### 1. Start MongoDB
+
+#### Option A: Using Docker (Recommended)
+```bash
+# Start MongoDB in a Docker container
+docker run -d --name acmeair-mongo -p 27017:27017 mongo:latest
+
+# Verify MongoDB is running
+docker ps | grep acmeair-mongo
+```
+
+#### Option B: Local MongoDB Installation
+```bash
+# Start MongoDB service (varies by OS)
+# macOS (with Homebrew):
+brew services start mongodb-community
+
+# Linux (systemd):
+sudo systemctl start mongod
+
+# Windows:
+net start MongoDB
+```
+
+### 2. Build and Run the Application
+
+```bash
+# Build the application with MongoDB support
+./gradlew -Pservice=morphia clean build
+
+# Start the web application
+./gradlew :acmeair-webapp:appRun
+```
+
+The application will be available at: http://localhost:8081
+
+### 3. Load Sample Data
+
+In a separate terminal, load the sample data:
+
+```bash
+# Load sample data into MongoDB
+./gradlew :acmeair-loader:run
+```
+
+### 4. Access the Application
+
+Open your browser and navigate to:
+- **Main Application**: http://localhost:8081
+- **API Endpoints**: http://localhost:8081/rest/api/
+
+## Configuration
+
+The MongoDB connection can be configured in:
+`acmeair-services-morphia/src/main/resources/acmeair-mongo.properties`
+
+Default settings:
+```properties
+mongo.host=localhost
+mongo.port=27017
+mongo.database=acmeair
+```
+
+## Development Commands
+
+```bash
+# Clean and build
+./gradlew clean build
+
+# Build with specific service (morphia for MongoDB)
+./gradlew -Pservice=morphia build
+
+# Run tests
+./gradlew test
+
+# Start development server
+./gradlew :acmeair-webapp:appRun
+
+# Load sample data
+./gradlew :acmeair-loader:run
+
+# Stop all background processes
+./gradlew --stop
+```
+
+## Docker MongoDB Management
+
+```bash
+# Start MongoDB container
+docker run -d --name acmeair-mongo -p 27017:27017 mongo:latest
+
+# Stop MongoDB container
+docker stop acmeair-mongo
+
+# Remove MongoDB container
+docker rm acmeair-mongo
+
+# View MongoDB logs
+docker logs acmeair-mongo
+
+# Connect to MongoDB shell
+docker exec -it acmeair-mongo mongosh
+```
+
+## Troubleshooting
+
+1. **Port 8081 already in use**: Change the port in `build.gradle` under the `gretty` configuration
+2. **MongoDB connection issues**: Verify MongoDB is running and accessible on localhost:27017
+3. **Java compatibility issues**: Ensure you're using Java 21 or higher
+4. **Build failures**: Run `./gradlew clean` before building
 
 ## How to get started
 
